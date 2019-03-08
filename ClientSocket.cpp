@@ -27,7 +27,7 @@ ClientSocket::ClientSocket(Socket* sock)
 {
 	// Accept a client socket
 	connectSocket = accept(sock->connectSocket, NULL, NULL);
-	if (connectSocket == INVALID_SOCKET) {		
+	if (connectSocket == INVALID_SOCKET) {
 		closesocket(sock->connectSocket);
 		WSACleanup();
 		throw Exception("accept failed", WSAGetLastError());
@@ -39,7 +39,7 @@ ClientSocket::ClientSocket(Socket* sock)
 void ClientSocket::resolve(const char *address, const char *port)
 {
 	int iResult = getaddrinfo(address, port, &hints, &result);
-	if (iResult != 0) 
+	if (iResult != 0)
 	{
 		WSACleanup();
 		throw Exception("getaddrinfo failed", iResult);
@@ -53,7 +53,7 @@ void ClientSocket::connect()
 		// Create a SOCKET for connecting to server
 		connectSocket = socket(ptr->ai_family, ptr->ai_socktype,
 			ptr->ai_protocol);
-		if (connectSocket == INVALID_SOCKET) {			
+		if (connectSocket == INVALID_SOCKET) {
 			WSACleanup();
 			throw Exception("socket failed with error: %ld\n", WSAGetLastError());
 		}
@@ -77,7 +77,7 @@ int ClientSocket::send(const char* sendbuf, int buflen)
 {
 	// Send an initial buffer
 	int iResult = ::send(connectSocket, sendbuf, buflen, 0);
-	if (iResult == SOCKET_ERROR) {		
+	if (iResult == SOCKET_ERROR) {
 		closesocket(connectSocket);
 		WSACleanup();
 		throw "send failed with error: %d\n";//WSAGetLastError());

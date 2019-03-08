@@ -22,7 +22,7 @@ void ServerSocket::resolve(const char* port)
 {
 	// Resolve the server address and port
 	iResult = getaddrinfo(NULL, port, &hints, &result);
-	if (iResult != 0) {		
+	if (iResult != 0) {
 		WSACleanup();
 		throw Exception("getaddrinfo failed with error: %d\n",iResult);
 	}
@@ -32,7 +32,7 @@ void ServerSocket::listen()
 {
 	// Create a SOCKET for connecting to server
 	connectSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-	if (connectSocket == INVALID_SOCKET) {		
+	if (connectSocket == INVALID_SOCKET) {
 		freeaddrinfo(result);
 		WSACleanup();
 		throw Exception("socket failed with error: %ld\n", WSAGetLastError());
@@ -40,7 +40,7 @@ void ServerSocket::listen()
 
 	// Setup the TCP listening socket
 	iResult = bind(connectSocket, result->ai_addr, (int)result->ai_addrlen);
-	if (iResult == SOCKET_ERROR) {		
+	if (iResult == SOCKET_ERROR) {
 		freeaddrinfo(result);
 		closesocket(connectSocket);
 		WSACleanup();
@@ -50,7 +50,7 @@ void ServerSocket::listen()
 	freeaddrinfo(result);
 
 	iResult = ::listen(connectSocket, SOMAXCONN);
-	if (iResult == SOCKET_ERROR) {		
+	if (iResult == SOCKET_ERROR) {
 		closesocket(connectSocket);
 		WSACleanup();
 		throw Exception("listen failed with error: %d\n", WSAGetLastError());

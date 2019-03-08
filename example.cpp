@@ -11,7 +11,7 @@ void make_client()
 {
 	const char* sendbuf = "this is a test";
 	char recvbuf[DEFAULT_BUFLEN];
-	
+
 	int recvbuflen = DEFAULT_BUFLEN;
 
 	// Validate the parameters
@@ -32,7 +32,7 @@ void make_client()
 		else
 			printf("recv failed with error: %d\n", WSAGetLastError());
 
-	} while (iResult > 0);	
+	} while (iResult > 0);
 }
 
 int make_server()
@@ -44,9 +44,9 @@ int make_server()
 	ServerSocket sock;
 	sock.resolve(DEFAULT_PORT);
 	sock.listen();
-	   
+
 	ClientSocket csock(&sock);
-	
+
 	// Receive until the peer shuts down the connection
 	int iResult = 0;
 	do {
@@ -54,13 +54,13 @@ int make_server()
 		if (iResult > 0) {
 			printf("Bytes received: %d\n", iResult);
 			// Echo the buffer back to the sender
-			iSendResult = csock.send(recvbuf, iResult);			
+			iSendResult = csock.send(recvbuf, iResult);
 			printf("Bytes sent: %d\n", iSendResult);
 		}
 		else if (iResult == 0)
-			printf("Connection closing...\n");		
+			printf("Connection closing...\n");
 
-	} while (iResult > 0);	
+	} while (iResult > 0);
 	return 0;
 }
 

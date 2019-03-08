@@ -7,7 +7,7 @@ class ServerSocket : public Socket
 	int iResult;
 	struct addrinfo* result = NULL;
 	struct addrinfo hints;
-public:	
+public:
 	ServerSocket();
 	~ServerSocket();
 	void resolve(const char* port);
