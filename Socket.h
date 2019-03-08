@@ -7,8 +7,10 @@
 
 class Socket
 {
-public:
+protected:
+	friend class ClientSocket;
 	SOCKET connectSocket = INVALID_SOCKET;
+public:
 	Socket();
 	~Socket();
 };
