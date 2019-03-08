@@ -1,9 +1,9 @@
 #pragma once
 #define WIN32_LEAN_AND_MEAN
 
-#include <windows.h>
+#ifdef _WIN32
 #include <winsock2.h>
-#include <ws2tcpip.h>
+#endif
 
 class Socket
 {

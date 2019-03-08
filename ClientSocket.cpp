@@ -1,5 +1,8 @@
 #include "ClientSocket.h"
 #include "Exception.h"
+#ifdef _WIN32
+#include <ws2tcpip.h>
+#endif
 
 // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
 #pragma comment (lib, "Ws2_32.lib")

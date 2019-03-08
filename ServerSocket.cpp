@@ -1,5 +1,8 @@
 #include "ServerSocket.h"
 #include "Exception.h"
+#ifdef _WIN32
+#include <ws2tcpip.h>
+#endif
 
 ServerSocket::ServerSocket()
 {
