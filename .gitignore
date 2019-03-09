@@ -4,7 +4,11 @@ Release/
 x64/
 .vs/
 
+.idea/
+
 CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
+cmake-build-debug/
+

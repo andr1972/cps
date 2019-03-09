@@ -6,7 +6,7 @@
 
 ServerSocket::ServerSocket()
 {
-	// Initialize Winsock
+#ifdef _WIN32
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
 		throw Exception("WSAStartup failed",iResult);
@@ -16,21 +16,23 @@ ServerSocket::ServerSocket()
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 	hints.ai_flags = AI_PASSIVE;
+#endif
 }
 
 void ServerSocket::resolve(const char* port)
 {
-	// Resolve the server address and port
+#ifdef _WIN32
 	iResult = getaddrinfo(NULL, port, &hints, &result);
 	if (iResult != 0) {
 		WSACleanup();
 		throw Exception("getaddrinfo failed with error: %d\n",iResult);
 	}
+#endif
 }
 
 void ServerSocket::listen()
 {
-	// Create a SOCKET for connecting to server
+#ifdef _WIN32
 	connectSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	if (connectSocket == INVALID_SOCKET) {
 		freeaddrinfo(result);
@@ -55,6 +57,7 @@ void ServerSocket::listen()
 		WSACleanup();
 		throw Exception("listen failed with error: %d\n", WSAGetLastError());
 	}
+#endif
 }
 
 ServerSocket::~ServerSocket()

@@ -3,10 +3,12 @@
 
 class ServerSocket : public Socket
 {
+#ifdef _WIN32
 	WSADATA wsaData;
 	int iResult;
 	struct addrinfo* result = NULL;
 	struct addrinfo hints;
+#endif
 public:
 	ServerSocket();
 	~ServerSocket();

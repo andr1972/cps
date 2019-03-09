@@ -12,7 +12,7 @@
 
 ClientSocket::ClientSocket()
 {
-	// Initialize Winsock
+#ifdef _WIN32
 	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
 		throw Exception("WSAStartup failed", iResult);
@@ -21,10 +21,12 @@ ClientSocket::ClientSocket()
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
+#endif
 }
 
 ClientSocket::ClientSocket(Socket* sock)
 {
+#ifdef _WIN32
 	// Accept a client socket
 	connectSocket = accept(sock->connectSocket, NULL, NULL);
 	if (connectSocket == INVALID_SOCKET) {
@@ -34,20 +36,24 @@ ClientSocket::ClientSocket(Socket* sock)
 	}
 	// No longer need server socket
 	closesocket(sock->connectSocket);
+#endif
 }
 
 void ClientSocket::resolve(const char *address, const char *port)
 {
+#ifdef _WIN32
 	int iResult = getaddrinfo(address, port, &hints, &result);
 	if (iResult != 0)
 	{
 		WSACleanup();
 		throw Exception("getaddrinfo failed", iResult);
 	}
+#endif
 }
 
 void ClientSocket::connect()
 {
+#ifdef _WIN32
 	// Attempt to connect to an address until one succeeds
 	for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
 		// Create a SOCKET for connecting to server
@@ -71,11 +77,12 @@ void ClientSocket::connect()
 		WSACleanup();
 		throw Exception("Unable to connect to server!\n");
 	}
+#endif
 }
 
 int ClientSocket::send(const char* sendbuf, int buflen)
 {
-	// Send an initial buffer
+#ifdef _WIN32
 	int iResult = ::send(connectSocket, sendbuf, buflen, 0);
 	if (iResult == SOCKET_ERROR) {
 		closesocket(connectSocket);
@@ -83,10 +90,12 @@ int ClientSocket::send(const char* sendbuf, int buflen)
 		throw "send failed with error: %d\n";//WSAGetLastError());
 	}
 	return iResult;
+#endif
 }
 
 void ClientSocket::closeSend()
 {
+#ifdef _WIN32
 	// shutdown the connection since no more data will be sent
 	int iResult = shutdown(connectSocket, SD_SEND);
 	if (iResult == SOCKET_ERROR) {
@@ -94,16 +103,20 @@ void ClientSocket::closeSend()
 		WSACleanup();
 		throw "shutdown failed with error: %d\n";// , WSAGetLastError());
 	}
+#endif
 }
 
 int ClientSocket::receive(char* receivebuf, int buflen)
 {
+#ifdef _WIN32
 	return recv(connectSocket, receivebuf, buflen, 0);
+#endif
 }
 
 ClientSocket::~ClientSocket()
 {
-	// cleanup
+#ifdef _WIN32
 	closesocket(connectSocket);
 	WSACleanup();
+#endif
 }

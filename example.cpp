@@ -30,7 +30,7 @@ void make_client()
 		else if (iResult == 0)
 			printf("Connection closed\n");
 		else
-			printf("recv failed with error: %d\n", WSAGetLastError());
+			printf("recv failed with error: %d\n", sock.getLastError());
 
 	} while (iResult > 0);
 }
