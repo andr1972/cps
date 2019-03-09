@@ -19,7 +19,7 @@ public:
 		if (n_)
 		{
 			char buf[80];
-			sprintf_s(buf, "Error code=%d", n_);
+			sprintf(buf, "Error code=%d", n_);
 			msg_ += buf;
 		}
 	}
