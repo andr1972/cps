@@ -5,6 +5,10 @@
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
+#else
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 #endif
 
 
@@ -19,6 +23,8 @@ ClientSocket::ClientSocket()
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
+#else
+	bzero((char *) &sock_addr, sizeof(sock_addr));
 #endif
 }
 
@@ -47,6 +53,23 @@ void ClientSocket::resolve(const char *address, int port)
 	{
 		WSACleanup();
 		throw Exception("getaddrinfo failed", iResult);
+	}
+#else
+	if (inet_pton(AF_INET, address, &(sock_addr.sin_addr))==0)
+	{
+		struct hostent *host;
+		host = gethostbyname(address);
+		sock_addr.sin_family = AF_INET;
+		bcopy((char *)host->h_addr,
+			  (char *)&sock_addr.sin_addr.s_addr,
+			  host->h_length);
+		sock_addr.sin_port = htons(port);
+	}
+	else
+	{
+		sock_addr.sin_addr.s_addr = inet_addr(address);
+		sock_addr.sin_family = AF_INET;
+		sock_addr.sin_port = htons(port);
 	}
 #endif
 }
@@ -77,6 +100,10 @@ void ClientSocket::connect()
 		WSACleanup();
 		throw Exception("Unable to connect to server!\n");
 	}
+#else
+	connectSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (::connect(connectSocket,(struct sockaddr *)&sock_addr,sizeof(sock_addr)) < 0)
+		throw Exception("ERROR connecting");
 #endif
 }
 
@@ -90,6 +117,8 @@ int ClientSocket::send(const char* sendbuf, int buflen)
 		throw "send failed with error: %d\n";//WSAGetLastError());
 	}
 	return iResult;
+#else
+	return write(connectSocket,sendbuf, buflen);
 #endif
 }
 
@@ -103,6 +132,8 @@ void ClientSocket::closeSend()
 		WSACleanup();
 		throw "shutdown failed with error: %d\n";// , WSAGetLastError());
 	}
+#else
+	shutdown(connectSocket, SHUT_WR);
 #endif
 }
 
@@ -110,6 +141,8 @@ int ClientSocket::receive(char* receivebuf, int buflen)
 {
 #ifdef _WIN32
 	return recv(connectSocket, receivebuf, buflen, 0);
+#else
+	return read(connectSocket, receivebuf, buflen);
 #endif
 }
 
@@ -118,5 +151,7 @@ ClientSocket::~ClientSocket()
 #ifdef _WIN32
 	closesocket(connectSocket);
 	WSACleanup();
+#else
+	close(connectSocket);
 #endif
 }

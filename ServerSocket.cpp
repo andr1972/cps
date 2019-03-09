@@ -64,6 +64,9 @@ void ServerSocket::listen()
 		throw Exception("listen failed with error: %d\n", WSAGetLastError());
 	}
 #else
+	connectSocket = socket(AF_INET , SOCK_STREAM , 0);
+	if (connectSocket == -1)
+		throw Exception("Could not create socket");
 	if (bind(connectSocket, (struct sockaddr *) &sock_addr, sizeof(sock_addr)) < 0)
 		throw Exception("ERROR on binding");
 	::listen(connectSocket,backLogSize);
