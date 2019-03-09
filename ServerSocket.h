@@ -12,7 +12,7 @@ class ServerSocket : public Socket
 public:
 	ServerSocket();
 	~ServerSocket();
-	void resolve(const char* port);
+	void resolve(int port);
 	void listen();
 };
 

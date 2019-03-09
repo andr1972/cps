@@ -2,12 +2,10 @@
 #include "Exception.h"
 #ifdef _WIN32
 #include <ws2tcpip.h>
-#endif
-
-// Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
+#endif
 
 
 ClientSocket::ClientSocket()
@@ -36,13 +34,15 @@ ClientSocket::ClientSocket(Socket* sock)
 	}
 	// No longer need server socket
 	closesocket(sock->connectSocket);
+#else
+	connectSocket = ::accept(sock->connectSocket, (struct sockaddr *) &sock_addr, &sock_addr_len);
 #endif
 }
 
-void ClientSocket::resolve(const char *address, const char *port)
+void ClientSocket::resolve(const char *address, int port)
 {
 #ifdef _WIN32
-	int iResult = getaddrinfo(address, port, &hints, &result);
+	int iResult = getaddrinfo(address, to_string(port).c_str(), &hints, &result);
 	if (iResult != 0)
 	{
 		WSACleanup();

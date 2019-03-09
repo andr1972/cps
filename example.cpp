@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #define DEFAULT_BUFLEN 512
-#define DEFAULT_PORT "27015"
+#define DEFAULT_PORT 27015
 
 void make_client()
 {
@@ -20,7 +20,7 @@ void make_client()
 	sock.resolve("localhost", DEFAULT_PORT);
 	sock.connect();
 	int iResult = sock.send(sendbuf, strlen(sendbuf));
-	printf("Bytes Sent: %ld\n", iResult);
+	printf("Bytes Sent: %d\n", iResult);
 	sock.closeSend();
 	// Receive until the peer closes the connection
 	do {

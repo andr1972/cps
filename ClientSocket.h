@@ -13,7 +13,7 @@ public:
 	ClientSocket();
 	ClientSocket(Socket* sock);
 	~ClientSocket();
-	void resolve(const char* address, const char* port);
+	void resolve(const char* address, int port);
 	void connect();
 	int send(const char* sendbuf, int buflen);
 	void closeSend();

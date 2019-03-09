@@ -19,14 +19,18 @@ ServerSocket::ServerSocket()
 #endif
 }
 
-void ServerSocket::resolve(const char* port)
+void ServerSocket::resolve(int  port)
 {
 #ifdef _WIN32
-	iResult = getaddrinfo(NULL, port, &hints, &result);
+	iResult = getaddrinfo(NULL, to_string(port).c_str(), &hints, &result);
 	if (iResult != 0) {
 		WSACleanup();
 		throw Exception("getaddrinfo failed with error: %d\n",iResult);
 	}
+#else
+	sock_addr.sin_family = AF_INET;
+    sock_addr.sin_addr.s_addr = INADDR_ANY;
+    sock_addr.sin_port = htons(port);
 #endif
 }
 
@@ -51,12 +55,16 @@ void ServerSocket::listen()
 
 	freeaddrinfo(result);
 
-	iResult = ::listen(connectSocket, SOMAXCONN);
+	iResult = ::listen(connectSocket, 128);
 	if (iResult == SOCKET_ERROR) {
 		closesocket(connectSocket);
 		WSACleanup();
 		throw Exception("listen failed with error: %d\n", WSAGetLastError());
 	}
+#else
+	if (bind(connectSocket, (struct sockaddr *) &sock_addr, sizeof(sock_addr)) < 0)
+		throw Exception("ERROR on binding");
+	::listen(connectSocket,128);
 #endif
 }
 
