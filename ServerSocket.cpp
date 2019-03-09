@@ -4,6 +4,8 @@
 #include <ws2tcpip.h>
 #endif
 
+const int backLogSize = 128;
+
 ServerSocket::ServerSocket()
 {
 #ifdef _WIN32
@@ -55,7 +57,7 @@ void ServerSocket::listen()
 
 	freeaddrinfo(result);
 
-	iResult = ::listen(connectSocket, 128);
+	iResult = ::listen(connectSocket, backLogSize);
 	if (iResult == SOCKET_ERROR) {
 		closesocket(connectSocket);
 		WSACleanup();
@@ -64,7 +66,7 @@ void ServerSocket::listen()
 #else
 	if (bind(connectSocket, (struct sockaddr *) &sock_addr, sizeof(sock_addr)) < 0)
 		throw Exception("ERROR on binding");
-	::listen(connectSocket,128);
+	::listen(connectSocket,backLogSize);
 #endif
 }
 
